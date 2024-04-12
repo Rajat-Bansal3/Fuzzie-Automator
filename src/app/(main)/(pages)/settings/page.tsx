@@ -1,11 +1,25 @@
-import React from 'react'
+import ProfileForm from "@/components/forms/ProfileForm";
+import React from "react";
 
-type Props = {}
+type Props = {};
 
 const Settings = (props: Props) => {
   return (
-    <div>Settings</div>
-  )
-}
+    <div className='flex flex-col gap-4'>
+      <h1 className='sticky top-0 z-10 flex items-center justify-between border-b bg-background/50 p-6 text-4xl backdrop-blur-lg'>
+        <span>settings</span>
+      </h1>
+      <div className='flex flex-col p-6 gap-10'>
+        <div>
+          <h2 className='text-2xl font-bold'>User Profile</h2>
+          <p className='text-base text-white/20'>
+            Add or Update your Profile Information
+          </p>
+        </div>
+        <ProfileForm />
+      </div>
+    </div>
+  );
+};
 
-export default Settings
+export default Settings;
