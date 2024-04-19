@@ -15,26 +15,39 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { EditUserProfileSchema } from "@/lib/types";
 import { Loader2 } from "lucide-react";
 
-type Props = {};
+type Props = {
+  user: any;
+  onUpdate?: any;
+};
 
-const ProfileForm = (props: Props) => {
-  const [isLoading, setIsLoading] = useState(true);
+const ProfileForm = ({ user, onUpdate }: Props) => {
+  const [isLoading, setIsLoading] = useState(false);
   const form = useForm<z.infer<typeof EditUserProfileSchema>>({
     mode: "onChange",
     resolver: zodResolver(EditUserProfileSchema),
     defaultValues: {
-      name: "",
-      email: "",
+      name: user.name,
+      email: user.email,
     },
   });
-  const onSubmit = () => {};
+  const onSubmit = async (value: z.infer<typeof EditUserProfileSchema>) => {
+    setIsLoading(true);
+    await onUpdate(value.name);
+    setIsLoading(false);
+  };
+  useEffect(() => {
+    form.reset({ name: user.name, email: user.email });
+  }, [user]);
   return (
     <Form {...form}>
-      <form onSubmit={onSubmit} className='flex flex-col gap-6'>
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className='flex flex-col gap-6'
+      >
         <FormField
           disabled={isLoading}
           control={form.control}
@@ -43,21 +56,25 @@ const ProfileForm = (props: Props) => {
             <FormItem>
               <FormLabel className='text-lg'>Full Name</FormLabel>
               <FormControl>
-                <Input placeholder='Name' {...field} />
+                <Input {...field} placeholder='Name' />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
         <FormField
-          disabled={true}
           control={form.control}
           name='email'
           render={({ field }) => (
             <FormItem>
               <FormLabel className='text-lg'>Email</FormLabel>
               <FormControl>
-                <Input placeholder='Email' type='email' {...field} />
+                <Input
+                  {...field}
+                  disabled={true}
+                  placeholder='Email'
+                  type='email'
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -69,8 +86,8 @@ const ProfileForm = (props: Props) => {
         >
           {isLoading ? (
             <>
-            <Loader2 className='mr-2 h-5 w-5 animate-spin' />
-            Saving
+              <Loader2 className='mr-2 h-5 w-5 animate-spin' />
+              Saving
             </>
           ) : (
             "Save User Settings"
